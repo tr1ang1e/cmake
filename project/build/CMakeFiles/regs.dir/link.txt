@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC  -O0 -g3 -Wl,--no-as-needed -ldl -lpthread -Wl,-rpath=$ORIGIN -shared -Wl,-soname,libregs.so -o libregs.so CMakeFiles/regs.dir/rb_tree.c.o CMakeFiles/regs.dir/va70xx_regs.c.o 

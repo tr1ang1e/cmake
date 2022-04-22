@@ -1,0 +1,7 @@
+/home/tr1ang1e/Projects/cmake/project/build/CMakeFiles/edit_cache.dir
+/home/tr1ang1e/Projects/cmake/project/build/CMakeFiles/main.dir
+/home/tr1ang1e/Projects/cmake/project/build/CMakeFiles/rebuild_cache.dir
+/home/tr1ang1e/Projects/cmake/project/build/CMakeFiles/regs.dir
+/home/tr1ang1e/Projects/cmake/project/build/inner_build/CMakeFiles/rebuild_cache.dir
+/home/tr1ang1e/Projects/cmake/project/build/inner_build/CMakeFiles/edit_cache.dir
+/home/tr1ang1e/Projects/cmake/project/build/inner_build/CMakeFiles/PROJECTNAME.dir

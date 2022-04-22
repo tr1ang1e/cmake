@@ -1,0 +1,1 @@
+/usr/bin/cc  -O0 -g3  -Wl,--no-as-needed -ldl -lpthread -Wl,-rpath=$ORIGIN CMakeFiles/PROJECTNAME.dir/main.c.o  -o PROJECTNAME 
