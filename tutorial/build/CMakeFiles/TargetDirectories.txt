@@ -1,0 +1,3 @@
+/home/tr1ang1e/Projects/cmake/tutorial/build/CMakeFiles/rebuild_cache.dir
+/home/tr1ang1e/Projects/cmake/tutorial/build/CMakeFiles/edit_cache.dir
+/home/tr1ang1e/Projects/cmake/tutorial/build/CMakeFiles/main.dir
