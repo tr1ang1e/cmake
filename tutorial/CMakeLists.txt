@@ -12,7 +12,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.16.3)
 
 PROJECT(
   TUTORIAL
-  VERSION 2.0.0.0  # might be used while CONFIGURE_FILE()
+  VERSION 3.0.0.0  # might be used while CONFIGURE_FILE()
 )
 
 #[[ RELATIVE PATHS inside CMAKE PROJECT TREE (in fact the paths are absolute)
@@ -38,8 +38,10 @@ SET(mv_LIBRARIES ${CMAKE_CURRENT_SOURCE_DIR}/libraries)
   *		> delete cache
   *     > cmake .. -D<OPTIONNAME>=<ON/OFF>
   *
+  * [!] prompt is necessary for correct OPTION() working
+  *
   * ]]
-OPTION(mv_LOGGING_on ON)
+OPTION(mv_LOGGING_on "" ON)
 
 
 # ********************** CONFIGURATIONS ********************** #
@@ -87,7 +89,6 @@ CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
 	SET(mv_LOGGING_DIR ${mv_LIBRARIES}/static)
 	ADD_SUBDIRECTORY(${mv_LOGGING_DIR})
 	LIST(APPEND mv_EXTRA_LIBS logging)
-	LIST(APPEND mv_EXTRA_INCLUDES ${mv_LOGGING_DIR})
  ENDIF()
 
   # ******************** CREATE EXECUTABLE ******************* #
@@ -96,5 +97,4 @@ CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
   TARGET_LINK_LIBRARIES(main PRIVATE ${mv_EXTRA_LIBS})
   TARGET_INCLUDE_DIRECTORIES(main PRIVATE 
 	${mv_INCLUDE_DIR}
-	${mv_EXTRA_INCLUDES}
   )

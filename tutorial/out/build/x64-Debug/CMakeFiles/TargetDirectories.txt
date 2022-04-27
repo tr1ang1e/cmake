@@ -1,3 +1,6 @@
 C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/CMakeFiles/main.dir
 C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/CMakeFiles/edit_cache.dir
 C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/logging.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/edit_cache.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/rebuild_cache.dir
