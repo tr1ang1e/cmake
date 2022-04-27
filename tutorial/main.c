@@ -1,7 +1,10 @@
-#include <stdio.h>
-#include "proj_version.h"
+#include "common.h"
 
-#define _TR_ printf(" ::  %s : %s : %d \n", __FILE__, __func__,  __LINE__)
+#ifdef mv_LOGGING_on
+    #include "logging.h"
+#else
+    #define _TR_
+#endif
 
 void print_proj_version()
 {
@@ -20,6 +23,10 @@ int main(int argc, char** argv)
 {
   _TR_;
   print_proj_version();
+
+  #ifdef mv_LOGGING_on
+    print_log(3, "zer", "one", "two");
+  #endif
 
   return 0;
 }

@@ -1,19 +1,48 @@
 #[[ LEGEND
   * 
-	* mv = 'my variable'            : neither environmental nor reserved
-	* ev = environmental variable   : affect cmake processing, set from the inside of CMakeLists or by environment default
-  * iv = inner variable           : affect cmake processing, set from the inside of CMakeLists or by cmake default
-	*
+  * [mv] = 'my variable'            : neither environmental nor reserved
+  * [ev] = environmental variable   : affect cmake processing, set from the inside of CMakeLists or by environment default
+  * [iv] = inner variable           : affect cmake processing, set from the inside of CMakeLists or by cmake default
+  *
+  * [on] = on						: point out corresponding option flag 
+  *
   * ]]
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.16.3)
 
-PROJECT (
+PROJECT(
   TUTORIAL
-  VERSION 1.0.0.0
+  VERSION 2.0.0.0  # might be used while CONFIGURE_FILE()
 )
 
-SET(mv_INCLUDE_DIR include)
+#[[ RELATIVE PATHS inside CMAKE PROJECT TREE (in fact the paths are absolute)
+  *
+  * PROJECT_SOURCE_DIR				= directory of the veri first call of PROJECT() (set only once and never changes)
+  *
+  * CMAKE_CURRENT_SOURCE_DIR		= directory of CMakeLists.txt which is processing
+  * CMAKE_CURRENT_BINARY_DIR		= directory of binary files of CMakeLists.txt which is processing (e.g. 'build')
+  * CMAKE_SOURCE_DIR				= directory of the most parent of all CMakeLists.txt
+  * CMAKE_BINARY_DIR				= directory of binary files of the most parent CMakeLists.txt 
+  * 
+  * ]]
+SET(mv_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+SET(mv_LIBRARIES ${CMAKE_CURRENT_SOURCE_DIR}/libraries)
+
+
+# ************************** OPTIONS ************************* #
+
+#[[ OPTION
+  * turn option ON or OFF (only possible values)
+  *   - might be used while CONFIGURE_FILE()
+  *   - to set value through command line 
+  *		> delete cache
+  *     > cmake .. -D<OPTIONNAME>=<ON/OFF>
+  *
+  * ]]
+OPTION(mv_LOGGING_on ON)
+
+
+# ********************** CONFIGURATIONS ********************** #
 
 #[[ CONFIGURE_FILE
   *
@@ -25,20 +54,47 @@ SET(mv_INCLUDE_DIR include)
   * use absolute paths or specific inner variables (e.d CMAKE_CURRENT_SOURCE_DIR) to set different paths
   *
   * ]]
-CONFIGURE_FILE (version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/proj_version.h)
+CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
 
-#[[ CMAKE_<LANG>_STANDART = inner variable
+#[[ CMAKE_<LANG>_STANDART = [iv]
   * spicify the default value of C standard required for all of following targets
-	*   - declaration  :  explicitely 
+  *   - declaration  :  explicitely 
   *   - definition   :  explicitely
-	*
-	* variable value affects <LANG>_STANDART property
-	* the way to set not default but specific value is direct:
-	*   set_property(TARGET <TARGET> PROPERTY C_STANDARD 11) 
-	*
+  *
+  * variable value affects <LANG>_STANDART property
+  * the way to set not default but specific value is direct:
+  *   set_property(TARGET <TARGET> PROPERTY C_STANDARD 11) 
+  *
   * ]]
   SET(CMAKE_C_STANDARD 99)
   SET(CMAKE_C_STANDARD_REQUIRED TRUE)
 
+
+  # ********************* BUILD SUBPROJECT ********************* #
+
+#[[ ADD_SUBDIRECTORY(<SUBPROJECT_TAKE_FROM>, <SUBPROJECT_BUILD_TO>)
+  * immediately process CMakeLists.txt from the specified directory
+  *   - child cmake process inherits all parent cmake process variables
+  *   - child can declare new or override parent variables but it doesn't affect parent
+  *   - to affect parent variables set(PARENT_SCOPE) should be called in child
+  *
+  * LIST(APPEND <LIST> <OBJECT>)
+  * append <OBJECT> to the <LIST>
+  *   - <LIST> is created at the first call of LIST(APPEND ...)
+  *
+  * ]]
+ IF(mv_LOGGING_on)
+	SET(mv_LOGGING_DIR ${mv_LIBRARIES}/static)
+	ADD_SUBDIRECTORY(${mv_LOGGING_DIR})
+	LIST(APPEND mv_EXTRA_LIBS logging)
+	LIST(APPEND mv_EXTRA_INCLUDES ${mv_LOGGING_DIR})
+ ENDIF()
+
+  # ******************** CREATE EXECUTABLE ******************* #
+
   ADD_EXECUTABLE(main main.c)
-  TARGET_INCLUDE_DIRECTORIES(main PRIVATE ${mv_INCLUDE_DIR})
+  TARGET_LINK_LIBRARIES(main PRIVATE ${mv_EXTRA_LIBS})
+  TARGET_INCLUDE_DIRECTORIES(main PRIVATE 
+	${mv_INCLUDE_DIR}
+	${mv_EXTRA_INCLUDES}
+  )

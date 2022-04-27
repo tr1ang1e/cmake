@@ -103,7 +103,7 @@ TARGET_INCLUDE_DIRECTORIES(main PRIVATE ${MV_VA70xxREGS_DIR}/include)
   * immediately process CMakeLists.txt from the specified directory
 	*   - child cmake process inherits all parent cmake process variables
 	*   - child can declare new or override parent variables but it doesn't affect parent
-	*   - to affect parent variables set(PARENT_SCOPE) should be called in chiled
+	*   - to affect parent variables set(PARENT_SCOPE) should be called in child
 	*
   * ]]
 ADD_SUBDIRECTORY(inner inner_build)

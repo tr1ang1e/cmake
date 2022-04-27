@@ -1,0 +1,10 @@
+// get project version info from CMakeLists.txt = PROJECT(...)
+// to get version = @<PROJECTNAME>_VERSION_<TYPE>@
+#define VERSION_MAJOR @TUTORIAL_VERSION_MAJOR@
+#define VERSION_MINOR @TUTORIAL_VERSION_MINOR@
+#define VERSION_PATCH @TUTORIAL_VERSION_PATCH@
+#define VERSION_TWEAK @TUTORIAL_VERSION_TWEAK@
+
+// get options declared by OPTION() and transform to C/C++ define macros
+// to get option = #cmakedefine <OPTIONNAME>
+#cmakedefine mv_LOGGING_on
