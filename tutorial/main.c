@@ -25,7 +25,7 @@ int main(int argc, char** argv)
   print_proj_version();
 
   #ifdef mv_LOGGING_on
-    print_log(3, "zer", "one", "two");
+    print_log(4, "zer", "one", "two", argv[1]);
   #endif
 
   return 0;

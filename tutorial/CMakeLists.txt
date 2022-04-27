@@ -12,7 +12,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.16.3)
 
 PROJECT(
   TUTORIAL
-  VERSION 3.0.0.0  # might be used while CONFIGURE_FILE()
+  VERSION 4.0.0.0  # might be used while CONFIGURE_FILE()
 )
 
 #[[ RELATIVE PATHS inside CMAKE PROJECT TREE (in fact the paths are absolute)
@@ -27,6 +27,7 @@ PROJECT(
   * ]]
 SET(mv_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 SET(mv_LIBRARIES ${CMAKE_CURRENT_SOURCE_DIR}/libraries)
+SET(mv_INSTALL_DIR _TUTORIAL)
 
 
 # ************************** OPTIONS ************************* #
@@ -72,7 +73,7 @@ CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
   SET(CMAKE_C_STANDARD_REQUIRED TRUE)
 
 
-  # ********************* BUILD SUBPROJECT ********************* #
+# ********************* BUILD SUBPROJECT ********************* #
 
 #[[ ADD_SUBDIRECTORY(<SUBPROJECT_TAKE_FROM>, <SUBPROJECT_BUILD_TO>)
   * immediately process CMakeLists.txt from the specified directory
@@ -91,10 +92,35 @@ CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
 	LIST(APPEND mv_EXTRA_LIBS logging)
  ENDIF()
 
-  # ******************** CREATE EXECUTABLE ******************* #
+
+# ******************** CREATE EXECUTABLE ******************* #
 
   ADD_EXECUTABLE(main main.c)
   TARGET_LINK_LIBRARIES(main PRIVATE ${mv_EXTRA_LIBS})
   TARGET_INCLUDE_DIRECTORIES(main PRIVATE 
 	${mv_INCLUDE_DIR}
   )
+
+
+# *********************** INSTALLATION ********************** #
+
+#[[ INSTALL(<WHAT> <WHERE>)
+  * place specific unit to specific directory
+  *		- <WHERE> is relative or absolute path
+  *     - relative path is taken regarding CMAKE_INSTALL_PREFIX [iv]
+  *     - to set path throug command line = cmake --install . prefix "new_prefix"
+  * 
+  * CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
+  * check if user set specific prefix or not
+  *
+  * SET
+  *   - use CACHE to deal with cached variable   
+  *	  - use FORCE to guarantee value would be cached
+  *   - PATH "..." is for cmake-gui
+  *
+  * ]]
+IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	SET(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "..." FORCE)
+ENDIF()
+INSTALL(TARGETS main DESTINATION ${mv_INSTALL_DIR})
+INSTALL(FILES ${mv_INCLUDE_DIR}/cmake_config.h DESTINATION ${mv_INSTALL_DIR})

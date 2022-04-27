@@ -2,7 +2,7 @@
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Users/tr1an/Projects/cmake/tutorial/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "C:/Users/tr1an/Projects/cmake/tutorial")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -35,6 +35,14 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
   include("C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/cmake_install.cmake")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/_TUTORIAL" TYPE EXECUTABLE FILES "C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/main.exe")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/_TUTORIAL" TYPE FILE FILES "C:/Users/tr1an/Projects/cmake/tutorial/include/cmake_config.h")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
