@@ -42,7 +42,7 @@ SET(mv_INSTALL_DIR _TUTORIAL)
   * [!] prompt is necessary for correct OPTION() working
   *
   * ]]
-OPTION(mv_LOGGING_on "" ON)
+OPTION(mv_LOGGING_on "" OFF)
 
 
 # ********************** CONFIGURATIONS ********************** #
@@ -102,7 +102,7 @@ CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
   )
 
 
-# *********************** INSTALLATION ********************** #
+# ************************ INSTALLING ********************** #
 
 #[[ INSTALL(<WHAT> <WHERE>)
   * place specific unit to specific directory
@@ -124,3 +124,17 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 ENDIF()
 INSTALL(TARGETS main DESTINATION ${mv_INSTALL_DIR})
 INSTALL(FILES ${mv_INCLUDE_DIR}/cmake_config.h DESTINATION ${mv_INSTALL_DIR})
+
+
+# ************************* TESTING ************************ #
+
+ENABLE_TESTING()
+
+ADD_TEST(NAME test_run COMMAND main)  # succeed if program starts and finishes correctly
+
+IF(NOT mv_LOGGING_on)
+	ADD_TEST(NAME test_version COMMAND main)
+	SET_TESTS_PROPERTIES(test_version PROPERTIES 
+		PASS_REGULAR_EXPRESSION "Project version ${TUTORIAL_VERSION_MAJOR}.${TUTORIAL_VERSION_MINOR}.${TUTORIAL_VERSION_PATCH}.${TUTORIAL_VERSION_TWEAK} "
+	)
+ENDIF()

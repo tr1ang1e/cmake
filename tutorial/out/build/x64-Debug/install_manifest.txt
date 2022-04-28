@@ -1,4 +1,0 @@
-C:/Users/tr1an/Projects/cmake/tutorial/_TUTORIAL/logging.lib
-C:/Users/tr1an/Projects/cmake/tutorial/_TUTORIAL/logging.h
-C:/Users/tr1an/Projects/cmake/tutorial/_TUTORIAL/main.exe
-C:/Users/tr1an/Projects/cmake/tutorial/_TUTORIAL/cmake_config.h

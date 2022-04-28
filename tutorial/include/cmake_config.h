@@ -7,4 +7,4 @@
 
 // get options declared by OPTION() and transform to C/C++ define macros
 /* #undef  */
-#define mv_LOGGING_on
+/* #undef mv_LOGGING_on */
