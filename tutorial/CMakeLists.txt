@@ -12,7 +12,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.16.3)
 
 PROJECT(
   TUTORIAL
-  VERSION 4.0.0.0  # might be used while CONFIGURE_FILE()
+  VERSION 5.0.0.0  # might be used while CONFIGURE_FILE()
 )
 
 #[[ RELATIVE PATHS inside CMAKE PROJECT TREE (in fact the paths are absolute)
@@ -42,7 +42,7 @@ SET(mv_INSTALL_DIR _TUTORIAL)
   * [!] prompt is necessary for correct OPTION() working
   *
   * ]]
-OPTION(mv_LOGGING_on "" OFF)
+OPTION(mv_LOGGING_on "" ON)
 
 
 # ********************** CONFIGURATIONS ********************** #

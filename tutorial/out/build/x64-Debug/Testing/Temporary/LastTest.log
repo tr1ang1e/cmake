@@ -1,37 +1,26 @@
-Start testing: Apr 28 09:40 RTZ 2 (çèìà)
+Start testing: Apr 28 09:52 RTZ 2 (çèìà)
 ----------------------------------------------------------
-1/2 Testing: test_run
-1/2 Test: test_run
+1/1 Testing: test_run
+1/1 Test: test_run
 Command: "C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/main.exe"
 Directory: C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug
-"test_run" start time: Apr 28 09:40 RTZ 2 (çèìà)
+"test_run" start time: Apr 28 09:52 RTZ 2 (çèìà)
 Output:
 ----------------------------------------------------------
+ ::  main.c : main : 24 
+ ::  main.c : print_proj_version : 11 
 Project version 4.0.0.0 
+ ::  logging.c : print_log : 12 
+ ::  logging 
+ arg_0 : zer 
+ arg_1 : one 
+ arg_2 : two 
 <end of output>
 Test time =   0.03 sec
 ----------------------------------------------------------
 Test Passed.
-"test_run" end time: Apr 28 09:40 RTZ 2 (çèìà)
+"test_run" end time: Apr 28 09:52 RTZ 2 (çèìà)
 "test_run" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-2/2 Testing: test_version
-2/2 Test: test_version
-Command: "C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/main.exe"
-Directory: C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug
-"test_version" start time: Apr 28 09:40 RTZ 2 (çèìà)
-Output:
-----------------------------------------------------------
-Project version 4.0.0.0 
-<end of output>
-Test time =   0.01 sec
-----------------------------------------------------------
-Test Fail Reason:
-Required regular expression not found. Regex=[Project version 4..0.0.0 
-]
-"test_version" end time: Apr 28 09:40 RTZ 2 (çèìà)
-"test_version" time elapsed: 00:00:00
-----------------------------------------------------------
-
-End testing: Apr 28 09:40 RTZ 2 (çèìà)
+End testing: Apr 28 09:52 RTZ 2 (çèìà)

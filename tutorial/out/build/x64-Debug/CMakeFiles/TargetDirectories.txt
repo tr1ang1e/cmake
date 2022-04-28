@@ -5,3 +5,10 @@ C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/CMakeFiles/rebuild_ca
 C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/CMakeFiles/list_install_components.dir
 C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/CMakeFiles/install.dir
 C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/CMakeFiles/install/local.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/logging.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/test.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/edit_cache.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/rebuild_cache.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/list_install_components.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/install.dir
+C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/CMakeFiles/install/local.dir

@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/tr1an/Projects/cmake/tutorial
+# Install script for directory: C:/Users/tr1an/Projects/cmake/tutorial/libraries/static
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -32,26 +32,11 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/cmake_install.cmake")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/_TUTORIAL" TYPE STATIC_LIBRARY FILES "C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/libraries/static/logging.lib")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/_TUTORIAL" TYPE EXECUTABLE FILES "C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/main.exe")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/_TUTORIAL" TYPE FILE FILES "C:/Users/tr1an/Projects/cmake/tutorial/libraries/static/logging.h")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/_TUTORIAL" TYPE FILE FILES "C:/Users/tr1an/Projects/cmake/tutorial/include/cmake_config.h")
-endif()
-
-if(CMAKE_INSTALL_COMPONENT)
-  set(CMAKE_INSTALL_MANIFEST "install_manifest_${CMAKE_INSTALL_COMPONENT}.txt")
-else()
-  set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
-endif()
-
-string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
-       "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/tr1an/Projects/cmake/tutorial/out/build/x64-Debug/${CMAKE_INSTALL_MANIFEST}"
-     "${CMAKE_INSTALL_MANIFEST_CONTENT}")
