@@ -12,7 +12,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 
 PROJECT(
   TUTORIAL
-  VERSION 7.0.0.0  # might be used while CONFIGURE_FILE()
+  VERSION 9.0.0.0  # might be used while CONFIGURE_FILE()
 )
 
 #[[ RELATIVE PATHS inside CMAKE PROJECT TREE (in fact the paths are absolute)
@@ -223,11 +223,15 @@ SET(CPACK_SOURCE_GENERATOR "TGZ")
   * might require system utilities, e.g.
   *		- WIN32 = NSIS (Nullsoft Scriptable Install System)
   *     - LINUX = ...
+  * 
+  * [!] pay attention CMake might be delivered as a part of IDE (e.g. Visual Studio)
+  *     so CPack (as well as CMake as intself) doesn't available from th command line
+  *     (e.g. for Viausl Studio use embedded command line: Tools - Command Line - Developer PowerShell)
   *
   * to pack project
   *		- configure cache 
   *		- build project
-  *     - instell project
+  *     - install project
   *     - run cpack ( do 'cmake'  from CMAKE_CURRENT_BINARY_DIR )
   *					( result would appear in binary dir as well )
   *
