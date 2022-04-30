@@ -1,6 +1,6 @@
 // get project version info from CMakeLists.txt = PROJECT(...)
 // to get version = @<PROJECTNAME>_VERSION_<TYPE>@
-#define VERSION_MAJOR 5
+#define VERSION_MAJOR 7
 #define VERSION_MINOR 0
 #define VERSION_PATCH 0
 #define VERSION_TWEAK 0
