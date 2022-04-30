@@ -18,7 +18,7 @@ void print_log(int _args_num_, ...)
 	va_start(args, _args_num_);
 
 	// 3. get arguments using their types (each arg might be accessed only once)
-	printf(" ::  logging \n");
+	printf(" ::  variadic function \n");
 	for (int idx = 0; idx < _args_num_; ++idx)
 	{
 		printf(" arg_%d : %s \n", idx, va_arg(args, const char*));

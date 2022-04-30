@@ -8,16 +8,16 @@
   *
   * ]]
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.16.3)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 
 PROJECT(
   TUTORIAL
-  VERSION 5.0.0.0  # might be used while CONFIGURE_FILE()
+  VERSION 7.0.0.0  # might be used while CONFIGURE_FILE()
 )
 
 #[[ RELATIVE PATHS inside CMAKE PROJECT TREE (in fact the paths are absolute)
   *
-  * PROJECT_SOURCE_DIR				= directory of the veri first call of PROJECT() (set only once and never changes)
+  * PROJECT_SOURCE_DIR				= directory of the very first call of PROJECT() (set only once and never changes)
   *
   * CMAKE_CURRENT_SOURCE_DIR		= directory of CMakeLists.txt which is processing
   * CMAKE_CURRENT_BINARY_DIR		= directory of binary files of CMakeLists.txt which is processing (e.g. 'build')
@@ -28,7 +28,7 @@ PROJECT(
 SET(mv_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 SET(mv_LIBRARIES ${CMAKE_CURRENT_SOURCE_DIR}/libraries)
 SET(mv_INSTALL_DIR _TUTORIAL)
-
+SET(mv_GENERATED_REQ ${mv_INCLUDE_DIR}/last_compile.h)
 
 # ************************** OPTIONS ************************* #
 
@@ -47,7 +47,7 @@ OPTION(mv_LOGGING_on "" ON)
 
 # ********************** CONFIGURATIONS ********************** #
 
-#[[ CONFIGURE_FILE
+#[[ CONFIGURE_FILE = cache-generating-time and compile-time
   *
   * transform template of format 'name.extension.in'
   * to target file format 'name.extension'
@@ -95,10 +95,11 @@ CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
 
 # ******************** CREATE EXECUTABLE ******************* #
 
-  ADD_EXECUTABLE(main main.c)
+  ADD_EXECUTABLE(main main.c ${mv_GENERATED_REQ})
   TARGET_LINK_LIBRARIES(main PRIVATE ${mv_EXTRA_LIBS})
   TARGET_INCLUDE_DIRECTORIES(main PRIVATE 
 	${mv_INCLUDE_DIR}
+	${mv_EXTRA_INCLUDES}
   )
 
 
@@ -138,3 +139,97 @@ IF(NOT mv_LOGGING_on)
 		PASS_REGULAR_EXPRESSION "Project version ${TUTORIAL_VERSION_MAJOR}.${TUTORIAL_VERSION_MINOR}.${TUTORIAL_VERSION_PATCH}.${TUTORIAL_VERSION_TWEAK} "
 	)
 ENDIF()
+
+
+# ********************* CUSTOM COMMAND ********************* #
+ 
+#[[ ADD_CUSTOM_COMMAND = compile-time (not cache-generating-time)
+  * 
+  * OUPTUT file must be invoked into target definition 
+  *		- e.g. ADD_EXECUTABLE(...) = explicitely, OK
+  *     - but not TARGET_LINK_DIRECTORIES(...) = inmplicitely, not OK
+  * otherwise COMMAND would be ingnored
+  *  
+  * the example of runnin python script is below
+  * to run bash script in use: 
+  *		- WIN32 = COMMAND cmd /c "script.bat"						# invoke command line
+  *     - LINUX = COMMAND chmod a+x "sript.sh" && "script.sh"		# command line by default
+  *
+  * ]]
+FIND_PACKAGE(PythonInterp 3.9 REQUIRED)
+ADD_CUSTOM_COMMAND(
+	OUTPUT ${mv_INCLUDE_DIR}/last_compile.h
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/last_compile.py ${mv_INCLUDE_DIR}/last_compile.h
+	COMMENT "Generating timestamp"
+)
+
+#[[ CHECK_SYMBOL_EXISTS
+  * check symbol existance if given library would be potentially #include'd
+  *   - if relative path specified library is searched in defaut system catalog (e.g. "stdio.h")
+  *   - if header doesn't exists an error would not appear - it jast would cause flag set to FALSE
+  *   - to use symbol, library should be included explicitely
+  *   - flag might be used in source macros
+  *     > TARGET_COMPILE_DEFINITIONS( ... )
+  *     > in source file = #ifdef ... #endif
+  *
+  * modifying the way CHECK_SYMBOL_EXISTS works:
+  *   - CMAKE_REQUIRED_LIBRARIES  =  search in in linkable libraries but don't link them
+  *     > e.g "m" is for "-lm" = link 'libm.so'/'libm.dll' 
+  *     > after that any the lib might be specified in repeated CHECK_SYMBOL_EXISTS call
+  *
+  * [!] pay attention = header 'last_compile.h' is created by ADD_CUSTOM_COMMAND()
+  *   - if file is epcent (e.g. was deleted) the flag would be set to FALSE while first cache generating
+  *	  - too have flag ON necessary:
+  *     > build all (will cause 'last_compile' target execution)
+  *     > delete cache and reconfigure (because now file exists)
+  *  the above example is synthetic but demonstrates CMake workflow well
+  *  to create file while cache generating use CONFIGURE_FILE()   
+  *
+  *  the right way to get cmake cache generating timestamp (not compiling) is:
+  *     > STRING(TIMESTAMP <VARIABLE> [<format_string>] [UTC])
+  *     > TARGET_COMPILE_DEFINITION( ... ) or ADD_DEFINITIONS(-DVARIABLE="${VARIABLE}")
+  *
+  * ]] 
+INCLUDE(CheckSymbolExists)
+CHECK_SYMBOL_EXISTS(_LC_ "${mv_INCLUDE_DIR}/last_compile.h" mv_LAST_COMPILE)
+IF(NOT mv_LAST_COMPILE)
+	# unset(mv_LAST_COMPILE CACHE)
+    # set(CMAKE_REQUIRED_LIBRARIES "m")
+    # check_symbol_exists(LAST_COMPILE_TIME "any.h" mv_LAST_COMPILE)
+	# IF(mv_LAST_COMPILE)
+	#	  target_linklibraries(main PRIVATE m)
+	# ENDIF()
+ELSE()
+	TARGET_COMPILE_DEFINITIONS(main PRIVATE "mv_LAST_COMPILE")
+	LIST(APPEND mv_EXTRA_INCLUDES ${mv_INCLUDE_DIR}/last_compile.h)
+ENDIF()
+
+
+# *********************** PACKAGING ************************ #
+
+# include all of required to the project system libraries into package
+INCLUDE(InstallRequiredSystemLibraries)
+
+# give information about package
+SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/license.txt")
+SET(CPACK_PACKAGE_VERSION_MAJOR "${Tutorial_VERSION_MAJOR}")
+SET(CPACK_PACKAGE_VERSION_MINOR "${Tutorial_VERSION_MINOR}")
+
+# choose packaging generator
+SET(CPACK_SOURCE_GENERATOR "TGZ")
+
+#[[ CPACK 
+  * inner cmake utility to create packages
+  * might require system utilities, e.g.
+  *		- WIN32 = NSIS (Nullsoft Scriptable Install System)
+  *     - LINUX = ...
+  *
+  * to pack project
+  *		- configure cache 
+  *		- build project
+  *     - instell project
+  *     - run cpack ( do 'cmake'  from CMAKE_CURRENT_BINARY_DIR )
+  *					( result would appear in binary dir as well )
+  *
+  * ]]
+INCLUDE(CPack)

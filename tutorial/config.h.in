@@ -6,5 +6,5 @@
 #define VERSION_TWEAK @TUTORIAL_VERSION_TWEAK@
 
 // get options declared by OPTION() and transform to C/C++ define macros
-// to get option = #cmakedefine <OPTIONNAME>
+// to get option = #cmakedefine <OPTIONNAME> = it will result into = #define <OPTIONNAME> (if option is ON)
 #cmakedefine mv_LOGGING_on
