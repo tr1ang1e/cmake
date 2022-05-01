@@ -8,11 +8,11 @@
   *
   * ]]
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.8)
 
 PROJECT(
   TUTORIAL
-  VERSION 9.0.0.0  # might be used while CONFIGURE_FILE()
+  VERSION 10.0.0.0  # might be used while CONFIGURE_FILE()
 )
 
 #[[ RELATIVE PATHS inside CMAKE PROJECT TREE (in fact the paths are absolute)
@@ -25,10 +25,11 @@ PROJECT(
   * CMAKE_BINARY_DIR				= directory of binary files of the most parent CMakeLists.txt 
   * 
   * ]]
-SET(mv_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-SET(mv_LIBRARIES ${CMAKE_CURRENT_SOURCE_DIR}/libraries)
+SET(mv_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+SET(mv_LIBRARIES ${CMAKE_SOURCE_DIR}/libraries)
 SET(mv_INSTALL_DIR _TUTORIAL)
 SET(mv_GENERATED_REQ ${mv_INCLUDE_DIR}/last_compile.h)
+SET(mv_HEADER_ONLY ${CMAKE_SOURCE_DIR}/libraries/header_only)
 
 # ************************** OPTIONS ************************* #
 
@@ -94,13 +95,17 @@ CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
 
 
 # ******************** CREATE EXECUTABLE ******************* #
+include(CheckSymbolExists)
+CHECK_SYMBOL_EXISTS(print_log_counter "${mv_HEADER_ONLY}/counters.h" isExists)
+CHECK_SYMBOL_EXISTS(_LC_ "${mv_INCLUDE_DIR}/last_compile.h" mv_LAST_COMPILE)
 
-  ADD_EXECUTABLE(main main.c ${mv_GENERATED_REQ})
-  TARGET_LINK_LIBRARIES(main PRIVATE ${mv_EXTRA_LIBS})
-  TARGET_INCLUDE_DIRECTORIES(main PRIVATE 
+
+ADD_EXECUTABLE(main main.c ${mv_GENERATED_REQ} "${mv_HEADER_ONLY}/counters.h")
+	TARGET_LINK_LIBRARIES(main PRIVATE ${mv_EXTRA_LIBS})
+	TARGET_INCLUDE_DIRECTORIES(main PRIVATE 
 	${mv_INCLUDE_DIR}
 	${mv_EXTRA_INCLUDES}
-  )
+)
 
 
 # ************************ INSTALLING ********************** #

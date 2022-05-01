@@ -1,4 +1,10 @@
 #include "common.h"
+#include "counters.h"
+
+int increment_counter(int counter)
+{
+    return counter++;
+}
 
 void print_proj_version()
 {

@@ -1,5 +1,5 @@
 #[[ ADD_LIBRARY
-  * add target of library type
+  * add target of library type (STATIC or SHARED or ...)
   *		- flag for default type is stored in BUILD_SHARED_LIBS 
   *     - default flag value = FALSE (so STATIC is default library type)
   *
