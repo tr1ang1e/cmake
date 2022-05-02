@@ -1,12 +1,12 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.16)
 
 project(main)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
-set(HEADERS ${CMAKE_SOURCE_DIR}/headers)
-add_executable(main main.c "${HEADERS}/header.h")
+add_executable(main main.c ${CMAKE_CURRENT_SOURCE_DIR}/headers/headers2/header.h)
+target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/headers/)
 
 include(CheckSymbolExists)
-CHECK_SYMBOL_EXISTS(str "${HEADERS}/header.h" strExists)
+CHECK_SYMBOL_EXISTS(str ${CMAKE_CURRENT_SOURCE_DIR}/headers/header.h strExists)
