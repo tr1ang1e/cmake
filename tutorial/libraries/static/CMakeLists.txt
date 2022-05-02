@@ -11,6 +11,10 @@
   *
   * ]]
 ADD_LIBRARY(logging STATIC logging.c)
+TARGET_LINK_LIBRARIES(logging PRIVATE 
+	proj_compile_flags
+	${mv_HEADER_ONLY_LIBS}
+)
 
 #[[ TARGET_INCLUDE_DIRECTORIES modern usage
   *
@@ -18,9 +22,7 @@ ADD_LIBRARY(logging STATIC logging.c)
   * ...
   *
   * ]]
-TARGET_INCLUDE_DIRECTORIES(logging
-	INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
-)
+TARGET_INCLUDE_DIRECTORIES(logging INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 #[[ PROPERTIES <WHAT>_OUTPUT_DIRECTORY
   * set the place which built files would be placed to

@@ -8,7 +8,7 @@
   *
   * ]]
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 
 PROJECT(
   TUTORIAL
@@ -27,9 +27,11 @@ PROJECT(
   * ]]
 SET(mv_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 SET(mv_LIBRARIES ${CMAKE_SOURCE_DIR}/libraries)
+SET(mv_HEADER_ONLY ${mv_LIBRARIES}/header_only)
 SET(mv_INSTALL_DIR _TUTORIAL)
 SET(mv_GENERATED_REQ ${mv_INCLUDE_DIR}/last_compile.h)
-SET(mv_HEADER_ONLY ${CMAKE_SOURCE_DIR}/libraries/header_only)
+SET(mv_SERVICE_FILES ${CMAKE_SOURCE_DIR}/service)
+
 
 # ************************** OPTIONS ************************* #
 
@@ -58,7 +60,7 @@ OPTION(mv_LOGGING_on "" ON)
   * use absolute paths or specific inner variables (e.d CMAKE_CURRENT_SOURCE_DIR) to set different paths
   *
   * ]]
-CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
+CONFIGURE_FILE(${mv_SERVICE_FILES}/config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
 
 #[[ CMAKE_<LANG>_STANDART = [iv]
   * spicify the default value of C standard required for all of following targets
@@ -74,10 +76,51 @@ CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
   SET(CMAKE_C_STANDARD_REQUIRED TRUE)
 
 
+# ***** GENERATOR EXPRESSIONS and INTERFACE LIBRARIES ****** #
+
+#[[ INTERFACE LIBRARY
+  * see cmake-buildsystem(7)::interfac librariess
+  *	  - does not generates any output but 
+  *   - is linked as regular static library
+  *
+  * two examples are below:
+  *   - header only library
+  *   - library that incapsulates compile flags of entire project
+  *		see documentation for:
+  *			cmake-compile-features(7)
+  *			TARGET_COMPILE_FEATURES
+  *			CMAKE_C_KNOWN_FEATURES
+  *
+  * GENERATOR EXPRESSIONS
+  * general rule : if 0 (1) value given on left, right expression was turn off (turn on)
+  * but to use generator expressions necessary read documentation for every, e.g.:
+  *   - $<BUILD_INTERFACE : ...> = left variable set automatically and turns on (1) or turns off (0) right expression
+  *   - $<COMPILE_LANG_AND_ID : ... > = left variable get value from right expression if language and one of ID tokens was set to TRUE while cmake detecting environment  
+  * and so on ...
+  *
+  * ]]
+
+# header only lib
+SET(mv_HEADER_ONLY_HEADERS ${mv_HEADER_ONLY}/counters.h) 
+ADD_LIBRARY(header_only INTERFACE ${mv_HEADER_ONLY_HEADERS})
+TARGET_INCLUDE_DIRECTORIES(header_only INTERFACE ${mv_HEADER_ONLY})
+LIST(APPEND mv_HEADER_ONLY_LIBS header_only)
+
+# compile flags incapsulation
+ADD_LIBRARY(proj_compile_flags INTERFACE)
+TARGET_COMPILE_FEATURES(proj_compile_flags INTERFACE c_std_99)
+SET(GCC_LIKE_C "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU,LCC>")
+SET(MSVC_C "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
+TARGET_COMPILE_OPTIONS(proj_compile_flags INTERFACE
+	"$<${GCC_LIKE_C}:$<BUILD_INTARFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
+	"$<${MSVC_C}:$<BUILD_INTERFACE:-W3>>"
+)
+
+
 # ********************* BUILD SUBPROJECT ********************* #
 
 #[[ ADD_SUBDIRECTORY(<SUBPROJECT_TAKE_FROM>, <SUBPROJECT_BUILD_TO>)
-  * immediately process CMakeLists.txt from the specified directory
+  * [!] immediately process CMakeLists.txt from the specified directory
   *   - child cmake process inherits all parent cmake process variables
   *   - child can declare new or override parent variables but it doesn't affect parent
   *   - to affect parent variables set(PARENT_SCOPE) should be called in child
@@ -95,16 +138,17 @@ CONFIGURE_FILE(config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
 
 
 # ******************** CREATE EXECUTABLE ******************* #
-include(CheckSymbolExists)
-CHECK_SYMBOL_EXISTS(print_log_counter "${mv_HEADER_ONLY}/counters.h" isExists)
-CHECK_SYMBOL_EXISTS(_LC_ "${mv_INCLUDE_DIR}/last_compile.h" mv_LAST_COMPILE)
 
-
-ADD_EXECUTABLE(main main.c ${mv_GENERATED_REQ} "${mv_HEADER_ONLY}/counters.h")
-	TARGET_LINK_LIBRARIES(main PRIVATE ${mv_EXTRA_LIBS})
-	TARGET_INCLUDE_DIRECTORIES(main PRIVATE 
+ADD_EXECUTABLE(main main.c ${mv_GENERATED_REQ})
+TARGET_LINK_LIBRARIES(main PRIVATE 
+    proj_compile_flags
+	${mv_EXTRA_LIBS}
+	${mv_HEADER_ONLY_LIBS}
+)
+TARGET_INCLUDE_DIRECTORIES(main PRIVATE 
 	${mv_INCLUDE_DIR}
 	${mv_EXTRA_INCLUDES}
+	${mv_HEADER_ONLY_LIBS}
 )
 
 
@@ -112,9 +156,9 @@ ADD_EXECUTABLE(main main.c ${mv_GENERATED_REQ} "${mv_HEADER_ONLY}/counters.h")
 
 #[[ INSTALL(<WHAT> <WHERE>)
   * place specific unit to specific directory
-  *		- <WHERE> is relative or absolute path
-  *     - relative path is taken regarding CMAKE_INSTALL_PREFIX [iv]
-  *     - to set path throug command line = cmake --install . prefix "new_prefix"
+  *	  - <WHERE> is relative or absolute path
+  *   - relative path is taken regarding CMAKE_INSTALL_PREFIX [iv]
+  *   - to set path throug command line = cmake --install . prefix "new_prefix"
   * 
   * CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
   * check if user set specific prefix or not
@@ -151,20 +195,20 @@ ENDIF()
 #[[ ADD_CUSTOM_COMMAND = compile-time (not cache-generating-time)
   * 
   * OUPTUT file must be invoked into target definition 
-  *		- e.g. ADD_EXECUTABLE(...) = explicitely, OK
-  *     - but not TARGET_LINK_DIRECTORIES(...) = inmplicitely, not OK
+  *	  - e.g. ADD_EXECUTABLE(...) = explicitely, OK
+  *   - but not TARGET_LINK_DIRECTORIES(...) = inmplicitely, not OK
   * otherwise COMMAND would be ingnored
   *  
   * the example of runnin python script is below
   * to run bash script in use: 
-  *		- WIN32 = COMMAND cmd /c "script.bat"						# invoke command line
-  *     - LINUX = COMMAND chmod a+x "sript.sh" && "script.sh"		# command line by default
+  *	  - WIN32 = COMMAND cmd /c "script.bat"						# invoke command line
+  *   - LINUX = COMMAND chmod a+x "sript.sh" && "script.sh"		# command line by default
   *
   * ]]
 FIND_PACKAGE(PythonInterp 3.9 REQUIRED)
 ADD_CUSTOM_COMMAND(
 	OUTPUT ${mv_INCLUDE_DIR}/last_compile.h
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/last_compile.py ${mv_INCLUDE_DIR}/last_compile.h
+	COMMAND ${PYTHON_EXECUTABLE} ${mv_SERVICE_FILES}/last_compile.py ${mv_INCLUDE_DIR}/last_compile.h
 	COMMENT "Generating timestamp"
 )
 
@@ -216,7 +260,7 @@ ENDIF()
 INCLUDE(InstallRequiredSystemLibraries)
 
 # give information about package
-SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/license.txt")
+SET(CPACK_RESOURCE_FILE_LICENSE "${mv_SERVICE_FILES}/license.txt")
 SET(CPACK_PACKAGE_VERSION_MAJOR "${Tutorial_VERSION_MAJOR}")
 SET(CPACK_PACKAGE_VERSION_MINOR "${Tutorial_VERSION_MINOR}")
 
@@ -226,19 +270,19 @@ SET(CPACK_SOURCE_GENERATOR "TGZ")
 #[[ CPACK 
   * inner cmake utility to create packages
   * might require system utilities, e.g.
-  *		- WIN32 = NSIS (Nullsoft Scriptable Install System)
-  *     - LINUX = ...
+  *	  - WIN32 = NSIS (Nullsoft Scriptable Install System)
+  *   - LINUX = ...
   * 
   * [!] pay attention CMake might be delivered as a part of IDE (e.g. Visual Studio)
   *     so CPack (as well as CMake as intself) doesn't available from th command line
   *     (e.g. for Viausl Studio use embedded command line: Tools - Command Line - Developer PowerShell)
   *
   * to pack project
-  *		- configure cache 
-  *		- build project
-  *     - install project
-  *     - run cpack ( do 'cmake'  from CMAKE_CURRENT_BINARY_DIR )
-  *					( result would appear in binary dir as well )
+  *	  - configure cache 
+  *	  - build project
+  *   - install project
+  *   - run cpack ( do 'cmake'  from CMAKE_CURRENT_BINARY_DIR )
+  *		          ( result would appear in binary dir as well )
   *
   * ]]
 INCLUDE(CPack)

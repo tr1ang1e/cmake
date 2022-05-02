@@ -1,7 +1,6 @@
 #include "logging.h"
-// #include "counters.h"
+#include "counters.h"
 
-int print_log_counter = 0;
 
 /* function with variable arguments number
  * as much args as needed, but:
@@ -10,10 +9,11 @@ int print_log_counter = 0;
  * memory for arguments, corresponding to ellipsis, would be dynamically allocated
  * 
  * */
+int print_log_counter = 0;
 void print_log(int _args_num_, ...)
 {
 	_TR_;
-	// increment_counter(print_log_counter);
+	increment_counter(&print_log_counter);
 	
 	// 1. declare va_list variable
 	va_list args;

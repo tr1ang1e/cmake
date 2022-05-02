@@ -1,3 +1,0 @@
-/home/tr1ang1e/Projects/cmake/test/build/CMakeFiles/rebuild_cache.dir
-/home/tr1ang1e/Projects/cmake/test/build/CMakeFiles/edit_cache.dir
-/home/tr1ang1e/Projects/cmake/test/build/CMakeFiles/main.dir
