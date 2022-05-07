@@ -32,8 +32,11 @@ int main(int argc, char** argv)
 
   #ifdef mv_LOGGING_on
     print_log(3, "zer", "one", "two");
+    print_log(3, "thr", "fou", "fiv");
     printf("print_log() called %d times \n", print_log_counter);
   #endif
+
+  print_exportable();
 
   return 0;
 }

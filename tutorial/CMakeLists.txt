@@ -12,7 +12,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 
 PROJECT(
   TUTORIAL
-  VERSION 10.0.0.0  # might be used while CONFIGURE_FILE()
+  VERSION 11.0.0.0  # might be used while CONFIGURE_FILE()
 )
 
 #[[ RELATIVE PATHS inside CMAKE PROJECT TREE (in fact the paths are absolute)
@@ -28,9 +28,20 @@ PROJECT(
 SET(mv_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 SET(mv_LIBRARIES ${CMAKE_SOURCE_DIR}/libraries)
 SET(mv_HEADER_ONLY ${mv_LIBRARIES}/header_only)
-SET(mv_INSTALL_DIR _TUTORIAL)
 SET(mv_GENERATED_REQ ${mv_INCLUDE_DIR}/last_compile.h)
 SET(mv_SERVICE_FILES ${CMAKE_SOURCE_DIR}/service)
+
+# necessary for *** BUILD SUBPROJECT *** section
+# see description further in *** INSTALLING *** section
+SET(mv_INSTALL_DIR cmake_tutorial_intsalled)
+IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	MESSAGE(" :: Changing CMAKE_INSTALL_PREFIX from default")
+	IF(WIN32)
+		SET(CMAKE_INSTALL_PREFIX "C:/cmake_tutorial" CACHE PATH "..." FORCE)
+	ELSE()
+		SET(CMAKE_INSTALL_PREFIX "/cmake_tutorial" CACHE PATH "..." FORCE)
+	ENDIF()
+ENDIF()
 
 
 # ************************** OPTIONS ************************* #
@@ -79,8 +90,8 @@ CONFIGURE_FILE(${mv_SERVICE_FILES}/config.h.in ${mv_INCLUDE_DIR}/cmake_config.h)
 # ***** GENERATOR EXPRESSIONS and INTERFACE LIBRARIES ****** #
 
 #[[ INTERFACE LIBRARY
-  * see cmake-buildsystem(7)::interfac librariess
-  *	  - does not generates any output but 
+  * see cmake-buildsystem(7)::interface librariess
+  *	  - does not generate any output but 
   *   - is linked as regular static library
   *
   * two examples are below:
@@ -136,6 +147,8 @@ TARGET_COMPILE_OPTIONS(proj_compile_flags INTERFACE
 	LIST(APPEND mv_EXTRA_LIBS logging)
  ENDIF()
 
+ ADD_SUBDIRECTORY(${mv_LIBRARIES}/cmake_exportable)
+ LIST(APPEND mv_EXTRA_LIBS exportable)
 
 # ******************** CREATE EXECUTABLE ******************* #
 
@@ -158,10 +171,11 @@ TARGET_INCLUDE_DIRECTORIES(main PRIVATE
   * place specific unit to specific directory
   *	  - <WHERE> is relative or absolute path
   *   - relative path is taken regarding CMAKE_INSTALL_PREFIX [iv]
-  *   - to set path throug command line = cmake --install . prefix "new_prefix"
+  *   - to set path through the command line = cmake --install . prefix <"new_prefix">
   * 
   * CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
   * check if user set specific prefix or not
+  * [!] VisualStudio always set specific prefix when installing
   *
   * SET
   *   - use CACHE to deal with cached variable   
@@ -169,11 +183,18 @@ TARGET_INCLUDE_DIRECTORIES(main PRIVATE
   *   - PATH "..." is for cmake-gui
   *
   * ]]
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	SET(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "..." FORCE)
-ENDIF()
 INSTALL(TARGETS main DESTINATION ${mv_INSTALL_DIR})
-INSTALL(FILES ${mv_INCLUDE_DIR}/cmake_config.h DESTINATION ${mv_INSTALL_DIR})
+INSTALL(
+	FILES ${mv_INCLUDE_DIR}/cmake_config.h ${mv_INCLUDE_DIR}/last_compile.h
+	DESTINATION ${mv_INSTALL_DIR}
+)
+
+# installing exportable module
+INSTALL(
+	EXPORT cmake_exportable				# name specified in corresponding CMakeLists.txt
+	FILE cmake_exportable.cmake			# name of .cmake file that would be generated
+	DESTINATION exportable_libs			# directory to place .cmake file specified above 
+)
 
 
 # ************************* TESTING ************************ #
