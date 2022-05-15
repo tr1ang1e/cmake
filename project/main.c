@@ -1,76 +1,45 @@
 #include "common.h"
-#include <dlfcn.h>   // runtime dynamic library linkage
+#include "counters.h"
 
-
-static void (*init)();                                     // va7044_A0_regs_init();
-static void (*destroy)();                                  // va7044_A0_regs_destroy();
-static bool (*get)(const char* key, RegFieldInfo* item);   // va7044_A0_regs_get(const char* pFieldName, RegFieldInfo* pItem);
-
-void print_found_info(RegFieldInfo* pFound, bool isFound)
+int increment_counter(int* counter)
 {
-    if (isFound)
-    {
-        TYPE type = (pFound->mask == 0xFFFFFFFFU) ? REGISTER : FIELD;
+    return (*counter)++;
+}
 
-        printf("REGISTER or FIELD found \n");
-        printf("    type = %s \n", type ? "field" : "register");
-        printf("    name = %s \n", pFound->name);
-        printf("  adress = 0x%08X \n", pFound->adress);
+int print_proj_version_counter = 0;
+void print_proj_version()
+{
+  _TR_;
+  increment_counter(&print_proj_version_counter);
 
-        if (type)
-        {
-            printf("  offset = %d \n", pFound->offset);
-            printf("    mask = 0x%08X \n", pFound->mask);
-        }
-    }
-    else
-    {
-        printf("unknown REGISTER or FIELD name \n");
-    }
-
-    printf("\n");
+  printf
+  (
+    "Project version %d.%d.%d.%d \n", 
+     VERSION_MAJOR,
+     VERSION_MINOR,
+     VERSION_PATCH,
+     VERSION_TWEAK
+  );
 }
 
 int main(int argc, char** argv)
 {
-    bool result = -1;
-    void* library = NULL;
-    RegFieldInfo item = {0};
+  _TR_;
 
-    do
-    {
-        // get library
-        library = dlopen("./libregs.so", RTLD_LAZY);
-        if(library == NULL)
-        {
-            printf("%s \n", dlerror());
-            break;
-        }
+  // 
+  print_proj_version();
+  printf("%s \n", _LC_);
+  printf("print_proj_version() called %d times \n", print_proj_version_counter);
 
-        init = (void (*)())dlsym(library, "va7044_A0_regs_init");         if (init == NULL) break;
-        destroy = (void (*)())dlsym(library, "va7044_A0_regs_destroy");   if (init == NULL) break;
-        get = (bool (*)(const char*, RegFieldInfo*))dlsym(library, "va7044_A0_regs_get");           if (init == NULL) break;
+  //
+  #ifdef mv_LOGGING_on
+    print_log(3, "zer", "one", "two");
+    print_log(3, "thr", "fou", "fiv");
+    printf("print_log() called %d times \n", print_log_counter);
+  #endif
 
-        init();
-        
-        result = get("_A_P1_CORE_DIG_IOCTRL_RW_DPHY_PPI_LANE1_OVR_0_7_reg", &item);
-        print_found_info(&item, result);          
-        
-        result = get("B_I_TXALPNIBBLE_C2_OVR_VAL", &item);
-        print_found_info(&item, result);          
+  //
+  external();
 
-        result = get("WRONG_NAME", &item);
-        print_found_info(&item, result);
-
-        destroy();
-
-        result = 0;
-    } while (0);
-    
-    if (library)
-    {
-        dlclose(library);
-    }
-
-    return result;
+  return 0;
 }

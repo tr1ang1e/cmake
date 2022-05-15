@@ -1,0 +1,14 @@
+# nesessary string for cmake to replace by service code
+# must be the first executable string (excluding empty strings and comments)
+@PACKAGE_INIT@
+
+# relative path:
+#  > from = *-config.cmake service file
+#  > to   = *.cmake module file
+INCLUDE ( "${CMAKE_CURRENT_LIST_DIR}/exportable.cmake" )
+
+# check targets or other required components are provided by *.cmake module
+# must be here even if no components are provided
+# if at least one of components isn't provided, <PACKAGE>_FOUND variable is set to FALSE
+# and the package is considered to be not found
+CHECK_REQUIRED_COMPONENTS(exportable)
