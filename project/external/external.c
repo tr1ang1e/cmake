@@ -1,5 +1,5 @@
 #include "static.h"
-// #include "exportable.h"
+#include "exportable.h"
 
 void external()
 {
@@ -7,6 +7,6 @@ void external()
 	print_static();
 
 	// INCLUDED library
-	// print_exportable();
+	print_exportable();
 }
 

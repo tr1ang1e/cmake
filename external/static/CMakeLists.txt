@@ -13,9 +13,15 @@
   * ]]
 ADD_LIBRARY(static STATIC static.c)
 TARGET_INCLUDE_DIRECTORIES(static INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+SET(STATIC_BUILD_DIR ${CMAKE_SOURCE_DIR}/out/build/static)
 
-# provide library file without installing
-SET_TARGET_PROPERTIES(static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out)
+# provide library and header files without installing (place to convinient directory)
+SET_TARGET_PROPERTIES(static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${STATIC_BUILD_DIR})
+FILE(COPY static.h DESTINATION ${STATIC_BUILD_DIR})
 
-# provide header file without installing
-FILE(COPY static.h DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/out)
+# install to provide with CPack install package (see top CMakeLists.txt:__7__:CPack)
+# pay attention to the difference between this approach and creating relocatable .cmake module:
+#	> this library : all paths, include directories etc. should be specified manually in a project-consumer
+#   > cmake module : all paths, include directories etc. are known by module
+INSTALL(TARGETS static DESTINATION libs/lib)
+INSTALL(FILES static.h DESTINATION libs/include)

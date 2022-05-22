@@ -168,6 +168,9 @@ TARGET_INCLUDE_DIRECTORIES(main PRIVATE
 	${mv_HEADER_ONLY_LIBS}
 )
 
+# convinient to run from command line (commonly wrong = only for now)
+SET_TARGET_PROPERTIES(main PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out)
+
 
 # ************************ INSTALLING ********************** #
 
@@ -197,7 +200,6 @@ INSTALL(
 # ************************* TESTING ************************ #
 
 ENABLE_TESTING()
-
 ADD_TEST(NAME test_run COMMAND main)  # succeed if program starts and finishes correctly
 
 IF(NOT mv_LOGGING_on)
@@ -244,7 +246,7 @@ ADD_CUSTOM_COMMAND(
   *     > e.g "m" is for "-lm" = link 'libm.so'/'libm.dll' 
   *     > after that any the lib might be specified in repeated CHECK_SYMBOL_EXISTS call
   *
-  * [!] pay attention = header 'last_compile.h' is created by ADD_CUSTOM_COMMAND()
+  * [!] pay attention = header 'last_compile.h' is created by ADD_CUSTOM_COMMAND() above
   *   - if file is epcent (e.g. was deleted) the flag would be set to FALSE while first cache generating
   *	  - too have flag ON necessary:
   *     > build all (will cause 'last_compile' target execution)
@@ -270,37 +272,3 @@ ELSE()
 	TARGET_COMPILE_DEFINITIONS(main PRIVATE "mv_LAST_COMPILE")
 	LIST(APPEND mv_EXTRA_INCLUDES ${mv_INCLUDE_DIR}/last_compile.h)
 ENDIF()
-
-
-# *********************** PACKAGING ************************ #
-
-# include all of required to the project system libraries into package
-INCLUDE(InstallRequiredSystemLibraries)
-
-# give information about package
-SET(CPACK_RESOURCE_FILE_LICENSE "${mv_SERVICE_FILES}/license.txt")
-SET(CPACK_PACKAGE_VERSION_MAJOR "${Tutorial_VERSION_MAJOR}")
-SET(CPACK_PACKAGE_VERSION_MINOR "${Tutorial_VERSION_MINOR}")
-
-# choose packaging generator
-SET(CPACK_SOURCE_GENERATOR "TGZ")
-
-#[[ CPACK 
-  * inner cmake utility to create packages
-  * might require system utilities, e.g.
-  *	  - WIN32 = NSIS (Nullsoft Scriptable Install System)
-  *   - LINUX = ...
-  * 
-  * [!] pay attention CMake might be delivered as a part of IDE (e.g. Visual Studio)
-  *     so CPack (as well as CMake as intself) doesn't available from th command line
-  *     (e.g. for Viausl Studio use embedded command line: Tools - Command Line - Developer PowerShell)
-  *
-  * to pack project
-  *	  - configure cache 
-  *	  - build project
-  *   - install project
-  *   - run cpack ( do 'cpack'  from CMAKE_CURRENT_BINARY_DIR )
-  *		          ( result would appear in binary dir as well )
-  *
-  * ]]
-INCLUDE(CPack)

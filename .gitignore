@@ -1,3 +1,4 @@
 .*
-/project/out
 /exportable/out
+/project/out
+/project/external/exportable*
